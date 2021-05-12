@@ -1,0 +1,42 @@
+.roomDataContainer{
+    height: 60%;
+    min-width: 10%;
+    margin-left: 10px;
+    border-radius: 8px;
+    background-color: white;
+    display: flex;
+    flex-direction: column;
+    
+}
+
+.inforBarRoomData{
+    background-color: green;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+}
+
+.userListContainer{
+    overflow:auto;
+    display: flex;
+    flex-direction: column;
+    flex: auto;
+}
+
+.user{
+    background: #f3ccd3;
+    border-radius: 20px;
+    padding: 5px 20px;
+    color: black;
+    display: inline-block;
+    margin: 5px;
+    text-align: center;
+}
+
+.userMe{
+    background: #ccf3eb;
+}
+
+

@@ -1,0 +1,49 @@
+.joinOuterContainer{
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background: black;
+}
+
+.joinInnerContainer{
+    margin:auto;
+    width: 300px;
+}
+
+.joinInnerContainer .heading{
+    color:white;
+    text-align: center;
+    border-bottom: white 1px solid;
+}
+
+.joinInput{
+    box-sizing:border-box;
+    border-radius: 3px;
+    border-color: white;
+    width: 100%;
+    padding:2px;
+
+}
+.mt-20{
+    /*margin-top: 20px;*/
+    margin: 20px 0 0 0;
+}
+
+.button{
+    width: 100%;
+    padding:5px;
+    background-color: rgb(79, 79, 192);
+    border: 1px solid;
+    border-color: rgb(79, 79, 192);
+    color: white;
+}
+
+.button:hover{
+    cursor: pointer;
+}
+
+ @media (max-width: 500px)  {
+    .joinInnerContainer{
+        width: 70vw;
+    }
+}
