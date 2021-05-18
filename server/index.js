@@ -40,6 +40,14 @@ io.on('connection',(socket)=>{
         callback();
     })
 
+    socket.on('sendTyping',(data,callback)=>{
+        const user = getUser(socket.id);
+        io.to(user.room).emit('typing',{user:user.name});
+        callback();
+        console.log(user.name, " typing");
+    })
+
+    
     socket.on('disconnect',(callback)=>{
         console.log('user has left');
         const user = removeUser(socket.id);

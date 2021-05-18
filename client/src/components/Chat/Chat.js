@@ -1,4 +1,4 @@
-import React,{useState,useEffect} from 'react';
+import React,{useState,useEffect,useRef} from 'react';
 import queryString from 'query-string';
 import io from 'socket.io-client';
 import './Chat.css';
@@ -6,6 +6,8 @@ import InfoBar from '../InfoBar/InfoBar';
 import Messages from '../Messages/Messages';
 import Input from '../Input/Input';
 import TextContainer from '../TextContainer/TextContainer';
+import TypingInfo from '../TypingInfo/TypingInfo';
+
 let socket;
 
 const Chat = ({location})=>{
@@ -15,6 +17,12 @@ const Chat = ({location})=>{
 
     const [message, setMessage] = useState('');
     const [messages, setMessages] = useState([]);
+    const [typingUsers,_setTypingUsers]= useState([]);
+    const typingUsersRef = useRef(typingUsers);
+    const setTypingUsers = data=>{
+        typingUsersRef.current=data;
+        _setTypingUsers(data);
+    }
 
     const ENDPOINT = 'http://localhost:5000/';
 
@@ -26,7 +34,7 @@ const Chat = ({location})=>{
         setRoom(room);
 
         socket.emit('join',{name,room},()=>{
-
+        turnSocket(name);
         });
 
        /* return ()=>{
@@ -50,6 +58,44 @@ const Chat = ({location})=>{
 
     },[users])
 
+    useEffect(()=>{
+        socket.emit('sendTyping',{},()=>{
+
+        });
+
+    },[message]);
+
+    const turnSocket = (name)=>{
+        socket.on('typing',({user})=>{
+            console.log(user,name);
+            // if (name==='') return;
+            if (user===name) return;
+
+            let userStored = typingUsersRef.current.find((u)=>u.user===user);
+            console.log(typingUsersRef.current)
+            console.log(userStored)
+            if (userStored){
+                clearTimeout(userStored.timeout);
+                userStored.timeout = setTimeout(()=>{
+                    let newUsers = typingUsersRef.current.filter((u)=>u.user!==user);
+                    setTypingUsers(newUsers);
+                    console.log("timeout after");
+                },2000);
+                return;
+            }
+
+            let userData={
+                user:user,
+                timeout:setTimeout(()=>{
+                    let newUsers = typingUsersRef.current.filter((u)=>u.user!==user);
+                    setTypingUsers(newUsers);
+                    console.log("timeout first");
+                },2000)
+            }
+
+            setTypingUsers([...typingUsersRef.current,userData]);
+        });
+    }
     const sendMessage = (event)=>{
         event.preventDefault();
         if (!message) return;
@@ -63,11 +109,16 @@ const Chat = ({location})=>{
                                                 <br/>
                                                 Message:{msg.text}
                                             </div>);
+   /* const typingUsersFormat = typingUsers.map((user)=>{
+        <TypingInfo username={user}/>
+    });*/
+
     return (
         <div className="outerContainer">
             <div className="container">
                 <InfoBar room={room}/>
                 <Messages messages={messages} name={name}/>
+                {typingUsers.map((userData)=><TypingInfo username={userData.user}/>)}
                 <Input message={message} setMessage={setMessage} sendMessage={sendMessage}/>
             </div>
             <TextContainer users={users} name={name}/>
