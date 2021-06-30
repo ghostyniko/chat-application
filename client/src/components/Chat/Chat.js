@@ -7,22 +7,23 @@ import Messages from '../Messages/Messages';
 import Input from '../Input/Input';
 import TextContainer from '../TextContainer/TextContainer';
 import TypingInfo from '../TypingInfo/TypingInfo';
-
+import {receive} from '../../features/messages/messagesSlice';
+import { join,leave } from '../../features/users/usersSlice';
+import {useSelector,useDispatch} from 'react-redux';
 let socket;
 
 const Chat = ({location})=>{
     const [name, setName] = useState('');
     const [room, setRoom] = useState('');
-    const [users,setUsers] = useState([]);
-
     const [message, setMessage] = useState('');
-    const [messages, setMessages] = useState([]);
     const [typingUsers,_setTypingUsers]= useState([]);
     const typingUsersRef = useRef(typingUsers);
     const setTypingUsers = data=>{
         typingUsersRef.current=data;
         _setTypingUsers(data);
     }
+    
+    const dispatch = useDispatch();
 
     const ENDPOINT = 'http://192.168.1.101:5000/';
 
@@ -33,7 +34,7 @@ const Chat = ({location})=>{
         setName(name);
         setRoom(room);
 
-        socket.emit('join',{name,room},()=>{
+        socket.emit('sendJoin',{name,room},()=>{
         turnSocket(name);
         });
 
@@ -47,16 +48,25 @@ const Chat = ({location})=>{
 
     useEffect(()=>{
         socket.on('message',(message)=>{
-            setMessages([...messages,message]);
+           /* setMessages([...messages,message]);*/
+           console.log("Primljena poruka "+ message);
+            dispatch(receive(message));
         })
-    },[messages]);
+    },[]);
 
     useEffect(()=>{
-        socket.on('roomData',({users})=>{
-            setUsers(users);
+        socket.on('userJoin',({user})=>{
+            dispatch(join(user));
         });
 
-    },[users])
+    },[])
+
+    useEffect(()=>{
+        socket.on('userLeave',({user})=>{
+            dispatch(leave(user));
+        });
+
+    },[])
 
     useEffect(()=>{
         socket.emit('sendTyping',{},()=>{
@@ -103,25 +113,16 @@ const Chat = ({location})=>{
         socket.emit('sendMessage',message,()=>setMessage(''));
 
     }
-    const messagesFormat = messages.map((msg)=>
-                                            <div>
-                                                Sender:{msg.user}
-                                                <br/>
-                                                Message:{msg.text}
-                                            </div>);
-   /* const typingUsersFormat = typingUsers.map((user)=>{
-        <TypingInfo username={user}/>
-    });*/
-
+  
     return (
         <div className="outerContainer">
             <div className="container">
                 <InfoBar room={room}/>
-                <Messages messages={messages} name={name}/>
+                <Messages name={name}/>
                 {typingUsers.map((userData)=><TypingInfo username={userData.user}/>)}
                 <Input message={message} setMessage={setMessage} sendMessage={sendMessage}/>
             </div>
-            <TextContainer users={users} name={name}/>
+            <TextContainer name={name}/>
         </div>
     )
 }
