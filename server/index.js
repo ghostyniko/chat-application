@@ -12,7 +12,7 @@ const server = http.createServer(app);
 const io = socketio(server,{
     cors:{
         origin:"*",
-        
+        methods: ["GET", "POST"]
     }
 });
 
@@ -30,6 +30,7 @@ io.on('connection',(socket)=>{
 
         socket.join(user.room);
         io.to(user.room).emit('roomData',{room:user.room, users:getUsersInRoom(user.room)});
+        console.log("User has joined");
         callback();
     });
 

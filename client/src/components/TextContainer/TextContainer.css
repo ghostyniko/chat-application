@@ -1,6 +1,6 @@
 .roomDataContainer{
-    height: 60%;
-    min-width: 10%;
+    height: 500px;
+    width: 150px;
     margin-left: 10px;
     border-radius: 8px;
     background-color: white;
@@ -39,4 +39,27 @@
     background: #ccf3eb;
 }
 
+@media (min-width: 480px) and (max-width: 800px) {
+    .roomDataContainer {
+      width: 20%;
+    }
+  }
 
+  @media  (max-width: 600px) {
+    .roomDataContainer {
+      
+      max-height: 15%;
+      width: 100%;
+    }
+    .userListContainer{
+        flex-direction: row;
+      flex-wrap: wrap;
+    }
+
+  }
+
+  @media  (max-height: 600px) {
+    .roomDataContainer{
+     height: 95%;
+    }
+  }

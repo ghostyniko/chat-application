@@ -24,7 +24,7 @@ const Chat = ({location})=>{
         _setTypingUsers(data);
     }
 
-    const ENDPOINT = 'http://localhost:5000/';
+    const ENDPOINT = 'http://192.168.1.101:5000/';
 
     useEffect(()=>{
         const {name,room} = queryString.parse(location.search);
